@@ -58,7 +58,7 @@ label: the labels you queried
 		
 	//query
 	if(isset($_POST['query']))
-		$qury = mysqli_real_escape_string($mysqli, $_POST['query']);
+		$query = mysqli_real_escape_string($mysqli, $_POST['query']);
 	else $query = null;
 	
 	//-----------------------------------------------------------//
