@@ -158,10 +158,14 @@ label: the labels you queried
         $link_query = 'SELECT LEFT(REPLACE(link,query_string,""),CHAR_LENGTH(REPLACE(link,query_string,"")) -1) AS url, IF(CHAR_LENGTH(clicks),1+(CHAR_LENGTH(clicks) - CHAR_LENGTH(REPLACE(clicks, ",", ""))),0) AS clicked FROM links JOIN campaigns ON campaigns.id=links.campaign_id WHERE app = '.$brand_id.' AND campaign_id = "'.$data['id'].'";';
         $link_result = mysqli_query($mysqli, $link_query);
         
+        // clean up link data
+        
         if ($link_result !== false) {
             $links = [];
             while ($link_data = mysqli_fetch_assoc($link_result)) {
                 $links[] = $link_data;
+                $url[] = $link_data['url'];
+                $clicks[] = $link_data['clicked'];
             }
             $data['links'] = $links;
         }
