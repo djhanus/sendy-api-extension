@@ -124,11 +124,6 @@ links: an array of links within the campaign, with the following elements:
         }
     }
 
-  // So, here we are, I think.
-  // We've been passed a brandID and a query.
-
-  // $app = trim(short($brand_id,true));
-
   $q = 'SELECT id, to_send, opens, label, sent FROM campaigns WHERE app = '.$brand_id;
 
   if ($query !== null) {
