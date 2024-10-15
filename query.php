@@ -94,11 +94,11 @@ label: the labels you queried
 	}
 
   //So, here we are, I think.
-  //We've been passed a brandID and a query.
+  //We've been passed a brandID and a query/search.
 
   // $app = trim(short($brand_id,true));
 
-  $q = 'SELECT to_send,opens FROM campaigns WHERE app = '.$brand_id.' AND label LIKE "%'.$query.'%";';
+  $q = 'SELECT to_send,opens,label FROM campaigns WHERE app = '.$brand_id.' AND label LIKE "%'.$query.'%";';
   $r = mysqli_query($mysqli, $q);
 
   if ($r === false) {
@@ -118,6 +118,9 @@ label: the labels you queried
   else
   {
     $data = mysqli_fetch_assoc($r);
+    $data['label'] = $data['label'];
+    $data['total_sent'] = $data['to_send'];
+    $data['brand_id'] = $brand_id;
     $opens = stripslashes($data['opens']);
     $opens_array = explode(',', $opens);
     $data['total_opens'] = count($opens_array);
@@ -142,9 +145,6 @@ label: the labels you queried
     $data['country_opens'] = $data_country;
 
     // Tidy up the data a little
-    $data['total_sent'] = $data['to_send'];
-    $data['brand_id'] = $brand_id;
-    $data['label'] = $label;
     unset($data['to_send']);
     unset($data['opens']);
 
