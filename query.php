@@ -33,6 +33,7 @@ total_opens: the total opens figure, visible in your dashboard
 open rate: total opens as a percentage of total sent
 unique_opens: de-duplicated opens figure
 open percentage: the percentage of unique opens against total sent
+Total clicks: the total number of clicks on all links in the campaign
 links: an array of links within the campaign, with the following elements:
   url: the URL of the link
   clicks: the number of clicks on the link
@@ -172,9 +173,12 @@ links: an array of links within the campaign, with the following elements:
                 $link_data['clicks'] = $link_data['clicked'];
                 unset($link_data['clicked']);
                 
-                $links[] = $link_data;
-            }
-            $data['links'] = $links;
+            // Sum up total clicks
+        $total_clicks += $link_data['clicks'];
+        $links[] = $link_data;
+    }
+    $data['total_clicks'] = $total_clicks; // Add total clicks above the links array
+    $data['links'] = $links;
         }
 
         // Tidy up the data a little
