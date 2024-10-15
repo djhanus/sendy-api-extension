@@ -93,12 +93,12 @@ label: the labels you queried
 		exit;
 	}
 
-  // So, here we are, I think.
-  // We've been passed a brandID and a query.
+  //So, here we are, I think.
+  //We've been passed a brandID and a query/search.
 
   // $app = trim(short($brand_id,true));
 
-  $q = 'SELECT to_send, opens FROM campaigns WHERE app = '.$brand_id.' AND label LIKE "%'.$query.'%";';
+  $q = 'SELECT to_send,opens,label FROM campaigns WHERE app = '.$brand_id.' AND label LIKE "%'.$query.'%";';
   $r = mysqli_query($mysqli, $q);
 
   if ($r === false) {
@@ -117,41 +117,39 @@ label: the labels you queried
   }
   else
   {
-    $reports = [];
-    while ($data = mysqli_fetch_assoc($r)) {
-        $opens = stripslashes($data['opens']);
-        $opens_array = explode(',', $opens);
-        $data['total_opens'] = count($opens_array);
+    $data = mysqli_fetch_assoc($r);
+    $data['label'] = $data['label'];
+    $data['total_sent'] = $data['to_send'];
+    $data['brand_id'] = $brand_id;
+    $opens = stripslashes($data['opens']);
+    $opens_array = explode(',', $opens);
+    $data['total_opens'] = count($opens_array);
 
-        $data_opens = [];
-        $data_country = [];
-        foreach ($opens_array as $open) {
-            list($id, $country) = explode(':', $open);
-            if (!isset($data_opens[$id])) {
-                $data_opens[$id] = 0;
-            }
-            $data_opens[$id]++;
-            
-            if (!isset($data_country[$country])) {
-                $data_country[$country] = 0;
-            }
-            $data_country[$country]++;
+    $data_opens = array();
+    $data_country = array(); // Initialize the array
+
+    foreach ($opens_array as $open) {
+        list($id, $country) = explode(':', $open);
+        if (!isset($data_opens[$id])) {
+            $data_opens[$id] = 0;
         }
-
-        $data['unique_opens'] = count($data_opens);
-        $data['open_percentage'] = round(($data['unique_opens'] / $data['total_sent']) * 100, 2);
-        // $data['country_opens'] = $data_country;
-
-        // Tidy up the data a little
-        unset($data['to_send']);
-        unset($data['opens']);
-
-        $reports[] = $data;
+        $data_opens[$id]++;
+        
+        if (!isset($data_country[$country])) {
+            $data_country[$country] = 0;
+        }
+        $data_country[$country]++;
     }
 
-    // Return the reports as a JSON response
-    echo json_encode(['reports' => $reports]);
-    exit;
+    $data['unique_opens'] = count($data_opens);
+    $data['open percentage'] = round(($data['unique_opens'] / $data['total_sent']) * 100, 2);
+    // $data['country_opens'] = $data_country;
+
+    // Tidy up the data a little
+    unset($data['to_send']);
+    unset($data['opens']);
+
+    echo json_encode($data);
   }
 	//-----------------------------------------------------------//
 ?>
