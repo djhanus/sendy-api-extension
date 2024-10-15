@@ -48,7 +48,7 @@ links: an array of links within the campaign, with the following elements:
 	$error_passed = array(
 	  'Brand ID not passed'
 	, 'Query not passed'
-  , 'This search yielded no results'
+    , 'This search yielded no results'
 	);
 	//-----------------------------------------------------------//
 
@@ -68,7 +68,7 @@ links: an array of links within the campaign, with the following elements:
 	//query
 	if(isset($_POST['query']))
 		$query = mysqli_real_escape_string($mysqli, $_POST['query']);
-	else $query = "";
+	else $query = '';
 
     //order by
     if(($_POST['order']=='asc') || ($_POST['order']=='desc'))
@@ -112,7 +112,11 @@ links: an array of links within the campaign, with the following elements:
 
   // $app = trim(short($brand_id,true));
 
-  $q = 'SELECT id, to_send, opens, label FROM campaigns WHERE app = '.$brand_id.' AND label LIKE "%'.$query.'%" ORDER BY id '.$order.';';
+  if ($query == '') {
+    $q = 'SELECT id, to_send, opens, label FROM campaigns WHERE app = '.$brand_id.' ORDER BY id '.$order.';';
+  } else {
+    $q = 'SELECT id, to_send, opens, label FROM campaigns WHERE app = '.$brand_id.' AND label LIKE "%'.$query.'%" ORDER BY id '.$order.';';
+  }
   $r = mysqli_query($mysqli, $q);
 
   if ($r === false) {
