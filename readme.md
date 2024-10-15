@@ -28,6 +28,7 @@ Put this file in a new folder within the /api/ folder, called "reporting", and c
 
   `sent` (optional) filter by date sent. Can be a Unix timestamp or a date in M/d/YY format. If not included all campaigns will be returned.
 
+---
 
 > The data return is in JSON and contains following:
 
