@@ -19,9 +19,9 @@ Call by POST to api/reporting/query.php with the following mandatory elements
   'api_key' => (your API key)
   'brand_id' => 1
   'search query' => (within the campaign name)
-  'order' => 'asc' or 'desc' (default is 'desc')
+  'order' (optional) => 'asc' or 'desc' (default is 'desc')
   
-  (Using the campaign name allows you to programmatically call multiple campaigns without knowing its campaign ID)
+  (Using the campaign name allows you to search for multiple campaigns without knowing its campaign ID)
 
 The data return is in JSON and looks like the following:
 
@@ -168,6 +168,7 @@ label: the labels you queried
                 unset($link_data['clicked']);
                 
                 $links[] = $link_data;
+            }
             $data['links'] = $links;
         }
 
