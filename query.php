@@ -195,6 +195,7 @@ links: an array of links within the campaign, with the following elements:
         // Tidy up the data a little
         unset($data['to_send']);
         unset($data['opens']);
+        unset($data['sent']);
 
         $campaigns[] = $data;
     }
