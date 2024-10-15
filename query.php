@@ -104,7 +104,7 @@ label: the labels you queried
 
   // $app = trim(short($brand_id,true));
 
-  $q = 'SELECT to_send, opens, label FROM campaigns WHERE app = '.$brand_id.' AND label LIKE "%'.$query.'%" ORDER BY id '.$order.'';';
+  $q = 'SELECT to_send, opens, label FROM campaigns WHERE app = '.$brand_id.' AND label LIKE "%'.$query.'%" ORDER BY id '.$order.';';
   $r = mysqli_query($mysqli, $q);
 
   if ($r === false) {
