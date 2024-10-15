@@ -1,5 +1,14 @@
-<?php include('../_connect.php');?>
-<?php include('../../includes/helpers/short.php');?>
+<?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+ini_set('log_errors', 1);
+ini_set('error_log', 'error_log.txt');
+
+include('../_connect.php');
+include('../../includes/helpers/short.php');
+
+header('Content-Type: application/json; charset=utf-8');
+?>
 <?php 
 /*
 ---Little helper function from james@crid.land for reporting link-clicks in a newsletter.

@@ -6,6 +6,8 @@ ini_set('error_log', 'error_log.txt');
 
 include('../_connect.php');
 include('../../includes/helpers/short.php');
+
+header('Content-Type: application/json; charset=utf-8');
 ?>
 <?php 
 /*
