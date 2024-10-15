@@ -17,11 +17,16 @@ See [query.php#26](query.php#26) for detailed information about the query fields
 Put this file in a new folder within the /api/ folder, called "reporting", and call it "query.php".
 
 Call by POST to api/reporting/query.php with the following elements
+
   api_key
   : (your API key)
+
   `brand_id` ==> (the brand ID you want to search)
+
   `query` (optional) ==> Search within the campaign name/label. If not included all campaigns will be returned.
+
   `order` (optional) ==> sort by date sent 'asc' or 'desc' (default is 'desc')
+  
   `sent` (optional) ==> filter by date sent. Can be a Unix timestamp or a date in M/d/YY format. If not included all campaigns will be returned.
   
   (Using the campaign name allows you to search for multiple campaigns without knowing its campaign ID)
