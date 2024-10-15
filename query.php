@@ -23,17 +23,18 @@ Call by POST to api/reporting/query.php with the following mandatory elements
   
   (Using the campaign name allows you to search for multiple campaigns without knowing its campaign ID)
 
-The data return is in JSON and looks like the following:
+The data return is in JSON and contains following:
 
 brand_id: the brand ID you sent
 id: the campaign ID
 label: the campaign label/name
 total_sent: the total sent for this campaign
 total_opens: the total opens figure, visible in your dashboard
-open rate: total opens as a percentage of total sent
+open_rate: total opens as a percentage of total sent
 unique_opens: de-duplicated opens figure
-open percentage: the percentage of unique opens against total sent
-Total clicks: the total number of clicks on all links in the campaign
+open_percentage: the percentage of unique opens against total sent
+total_clicks: the total number of clicks on all links in the campaign
+click_rate: the total clicks as a percentage of total sent
 links: an array of links within the campaign, with the following elements:
   url: the URL of the link
   clicks: the number of clicks on the link
