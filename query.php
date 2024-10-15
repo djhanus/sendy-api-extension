@@ -68,7 +68,7 @@ links: an array of links within the campaign, with the following elements:
 	//query
 	if(isset($_POST['query']))
 		$query = mysqli_real_escape_string($mysqli, $_POST['query']);
-	else $query = '';
+	else $query = null;
 
     //order by
     if(($_POST['order']=='asc') || ($_POST['order']=='desc'))
@@ -101,18 +101,13 @@ links: an array of links within the campaign, with the following elements:
 		echo $error_passed[0];
 		exit;
 	}
-	else if($query==null)
-	{
-		echo $error_passed[1];
-		exit;
-	}
 
   // So, here we are, I think.
   // We've been passed a brandID and a query.
 
   // $app = trim(short($brand_id,true));
 
-  if ($query == '') {
+  if ($query == null) {
     $q = 'SELECT id, to_send, opens, label FROM campaigns WHERE app = '.$brand_id.' ORDER BY id '.$order.';';
   } else {
     $q = 'SELECT id, to_send, opens, label FROM campaigns WHERE app = '.$brand_id.' AND label LIKE "%'.$query.'%" ORDER BY id '.$order.';';
