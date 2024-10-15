@@ -70,6 +70,11 @@ links: an array of links within the campaign, with the following elements:
 		$query = mysqli_real_escape_string($mysqli, $_POST['query']);
 	else $query = null;
 
+    //date sent
+    if(isset($_POST['date_sent']))
+    $date_sent = mysqli_real_escape_string($mysqli, $_POST['date_sent']);
+    else $date_sent = null;
+    
     //order by
     if(($_POST['order']=='asc') || ($_POST['order']=='desc'))
     $order = mysqli_real_escape_string($mysqli, $_POST['order']);
@@ -107,11 +112,14 @@ links: an array of links within the campaign, with the following elements:
 
   // $app = trim(short($brand_id,true));
 
-  if ($query == null) {
-    $q = 'SELECT id, to_send, opens, label FROM campaigns WHERE app = '.$brand_id.' ORDER BY id '.$order.';';
-  } else {
-    $q = 'SELECT id, to_send, opens, label FROM campaigns WHERE app = '.$brand_id.' AND label LIKE "%'.$query.'%" ORDER BY id '.$order.';';
+  $q = 'SELECT id, to_send, opens, label FROM campaigns WHERE app = '.$brand_id;
+
+  if ($query !== null) {
+      $q .= ' AND label LIKE "%'.$query.'%"';
   }
+  
+  $q .= ' ORDER BY id '.$order.';';
+  
   $r = mysqli_query($mysqli, $q);
 
   if ($r === false) {
