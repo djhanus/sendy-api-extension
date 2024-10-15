@@ -100,9 +100,6 @@ label: the labels you queried
 
   $q = 'SELECT to_send,opens,label FROM campaigns WHERE app = '.$brand_id.' AND label LIKE "%'.$query.'%";';
   $r = mysqli_query($mysqli, $q);
-  foreach ($r as $row) {
-    $data = $row;
-  }
 
   if ($r === false) {
       // Log the error message
