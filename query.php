@@ -142,7 +142,8 @@ label: the labels you queried
     }
 
     $data['unique_opens'] = count($data_opens);
-    $data['country_opens'] = $data_country;
+    $data['open percentage'] = round(($data['unique_opens'] / $data['total_sent']) * 100, 2);
+    // $data['country_opens'] = $data_country;
 
     // Tidy up the data a little
     unset($data['to_send']);
