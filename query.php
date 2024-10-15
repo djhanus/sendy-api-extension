@@ -17,8 +17,8 @@ Put this file in a new folder within the /api/ folder, called "reporting", and c
 
 Call by POST to api/reporting/query.php with the following mandatory elements
   'api_key' => (your API key)
-  'brand_id' => 1
-  'search query' => (within the campaign name)
+  'brand_id' => (the brand ID you want to search)
+  'query' (optional) => Search within the campaign name/label. If not included all campaigns will be returned.
   'order' (optional) => 'asc' or 'desc' (default is 'desc')
   
   (Using the campaign name allows you to search for multiple campaigns without knowing its campaign ID)
@@ -68,7 +68,7 @@ links: an array of links within the campaign, with the following elements:
 	//query
 	if(isset($_POST['query']))
 		$query = mysqli_real_escape_string($mysqli, $_POST['query']);
-	else $query = null;
+	else $query = "";
 
     //order by
     if(($_POST['order']=='asc') || ($_POST['order']=='desc'))
