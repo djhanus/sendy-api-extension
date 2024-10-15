@@ -163,9 +163,10 @@ label: the labels you queried
         if ($link_result !== false) {
             $links = [];
             while ($link_data = mysqli_fetch_assoc($link_result)) {
-                $links[] = $link_data;
-                $url[] = $link_data['url'];
-                $clicks[] = $link_data['clicked'];
+                while ($links[] = $link_data;) {
+                    $links['url'] = $link_data['url'];
+                    $links['clicks'] = $link_data['clicked'];
+                }
             }
             $data['links'] = $links;
         }
