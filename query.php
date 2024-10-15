@@ -28,6 +28,7 @@ The data return is in JSON and contains following:
 brand_id: the brand ID you sent
 id: the campaign ID
 label: the campaign label/name
+date_sent: the date the campaign was sent
 total_sent: the total sent for this campaign
 total_opens: the total opens figure, visible in your dashboard
 open_rate: total opens as a percentage of total sent
@@ -112,14 +113,14 @@ links: an array of links within the campaign, with the following elements:
 
   // $app = trim(short($brand_id,true));
 
-  $q = 'SELECT id, to_send, opens, label FROM campaigns WHERE app = '.$brand_id;
+  $q = 'SELECT id, to_send, opens, label, sent FROM campaigns WHERE app = '.$brand_id;
 
   if ($query !== null) {
       $q .= ' AND label LIKE "%'.$query.'%"';
   }
   
   $q .= ' ORDER BY id '.$order.';';
-  
+
   $r = mysqli_query($mysqli, $q);
 
   if ($r === false) {
@@ -143,6 +144,7 @@ links: an array of links within the campaign, with the following elements:
         $data['brand_id'] = $brand_id;
         $campaign_id = $data['id'];
         $data['label'] = $data['label'];
+        $data['date_sent'] = date('l, F j, Y g:i:s A', $data['sent']);
         $data['total_sent'] = $data['to_send'];
         $opens = stripslashes($data['opens']);
         $opens_array = explode(',', $opens);
