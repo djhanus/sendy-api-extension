@@ -131,7 +131,7 @@ links: an array of links within the campaign, with the following elements:
   }
   else
   {
-    $reports = [];
+    $campaigns = [];
     while ($data = mysqli_fetch_assoc($r)) {
         $data['brand_id'] = $brand_id;
         $campaign_id = $data['id'];
@@ -187,11 +187,11 @@ links: an array of links within the campaign, with the following elements:
         unset($data['to_send']);
         unset($data['opens']);
 
-        $reports[] = $data;
+        $campaigns[] = $data;
     }
 
     // Return the reports as a JSON response
-    echo json_encode(['reports' => $reports]);
+    echo json_encode(['campaigns' => $campaigns]);
     exit;
   }
 	//-----------------------------------------------------------//
