@@ -7,9 +7,7 @@ ini_set('error_log', 'error_log.txt');
 include('../_connect.php');
 include('../../includes/helpers/short.php');
 ?>
-
 <?php 
-header('Content-Type: application/json; charset=utf-8');
 /*
 ---Little helper function for reporting
 
@@ -154,8 +152,8 @@ label: the labels you queried
         $data['unique_opens'] = count($data_opens);
         $data['open_percentage'] = round(($data['unique_opens'] / $data['total_sent']) * 100, 2);
 
-        // Fetch link data for the current campaign using campaign ID
-        $link_query = 'SELECT LEFT(REPLACE(link,query_string,""),CHAR_LENGTH(REPLACE(link,query_string,"")) -1) AS url, recipients, IF(CHAR_LENGTH(clicks),1+(CHAR_LENGTH(clicks) - CHAR_LENGTH(REPLACE(clicks, ",", ""))),0) AS clicked FROM links WHERE campaign_id = '.$campaign_id.';';
+        // Fetch link data for the current campaign
+        $link_query = 'SELECT LEFT(REPLACE(link,query_string,""),CHAR_LENGTH(REPLACE(link,query_string,"")) -1) AS url, recipients, IF(CHAR_LENGTH(clicks),1+(CHAR_LENGTH(clicks) - CHAR_LENGTH(REPLACE(clicks, ",", ""))),0) AS clicked FROM links JOIN campaigns ON campaigns.id=links.campaign_id WHERE app = '.$brand_id.' AND label = "'.$data['label'].'";';
         $link_result = mysqli_query($mysqli, $link_query);
         
         if ($link_result !== false) {
