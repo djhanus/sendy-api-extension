@@ -19,7 +19,7 @@ Call by POST to api/reporting/query.php with the following mandatory elements
   'api_key' => (your API key)
   'brand_id' => (the brand ID you want to search)
   'query' (optional) => Search within the campaign name/label. If not included all campaigns will be returned.
-  'order' (optional) => 'asc' or 'desc' (default is 'desc')
+  'order' (optional) => sort by date sent 'asc' or 'desc' (default is 'desc')
   
   (Using the campaign name allows you to search for multiple campaigns without knowing its campaign ID)
 
@@ -28,7 +28,7 @@ The data return is in JSON and contains following:
 brand_id: the brand ID you sent
 id: the campaign ID
 label: the campaign label/name
-date_sent: the date the campaign was sent
+date_sent: the date the campaign was sent converted from Unix
 total_sent: the total sent for this campaign
 total_opens: the total opens figure, visible in your dashboard
 open_rate: total opens as a percentage of total sent
