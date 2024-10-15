@@ -155,7 +155,7 @@ label: the labels you queried
         $data['open_percentage'] = round(($data['unique_opens'] / $data['total_sent']) * 100, 2);
 
         // Fetch link data for the current campaign
-        $link_query = 'SELECT LEFT(REPLACE(link,query_string,""),CHAR_LENGTH(REPLACE(link,query_string,"")) -1) AS url, recipients, IF(CHAR_LENGTH(clicks),1+(CHAR_LENGTH(clicks) - CHAR_LENGTH(REPLACE(clicks, ",", ""))),0) AS clicked FROM links JOIN campaigns ON campaigns.id=links.campaign_id WHERE app = '.$brand_id.' AND campaign_id = "'.$data['id'].'";';
+        $link_query = 'SELECT LEFT(REPLACE(link,query_string,""),CHAR_LENGTH(REPLACE(link,query_string,"")) -1) AS url, IF(CHAR_LENGTH(clicks),1+(CHAR_LENGTH(clicks) - CHAR_LENGTH(REPLACE(clicks, ",", ""))),0) AS clicked FROM links JOIN campaigns ON campaigns.id=links.campaign_id WHERE app = '.$brand_id.' AND campaign_id = "'.$data['id'].'";';
         $link_result = mysqli_query($mysqli, $link_query);
         
         if ($link_result !== false) {
