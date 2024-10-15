@@ -25,14 +25,18 @@ Call by POST to api/reporting/query.php with the following mandatory elements
 
 The data return is in JSON and looks like the following:
 
-{"total_opens":361,"unique_opens":208,"country_opens":{"US":127,"EU":47,"GB":57,"AP":19,"CZ":1,"":3,"DE":3,"IE":16,"AU":48,"SE":6,"ES":2,"CH":1,"FR":4,"SI":2,"CA":14,"NL":2,"MV":1,"NZ":2,"AE":1,"IN":1,"BE":1,"JP":2,"BR":1},"total_sent":"341","brand_id":"1","label":"podnews 2017-08-07"}
-
-total_opens: the total opens figure, visible in your dashboard
-unique_opens: de-duplicated opens figure
-country_opens: an array with individual countries opened out. Note - this is based on total_opens, not unique
-total_sent: the total sent for this campaign
 brand_id: the brand ID you sent
-label: the labels you queried
+id: the campaign ID
+label: the campaign label/name
+total_sent: the total sent for this campaign
+total_opens: the total opens figure, visible in your dashboard
+open rate: total opens as a percentage of total sent
+unique_opens: de-duplicated opens figure
+open percentage: the percentage of unique opens against total sent
+links: an array of links within the campaign, with the following elements:
+  url: the URL of the link
+  clicks: the number of clicks on the link
+
 
 */
 
@@ -127,13 +131,14 @@ label: the labels you queried
   {
     $reports = [];
     while ($data = mysqli_fetch_assoc($r)) {
+        $data['brand_id'] = $brand_id;
         $campaign_id = $data['id'];
         $data['label'] = $data['label'];
         $data['total_sent'] = $data['to_send'];
-        $data['brand_id'] = $brand_id;
         $opens = stripslashes($data['opens']);
         $opens_array = explode(',', $opens);
         $data['total_opens'] = count($opens_array);
+        $data['open_rate'] = round(($data['total_opens'] / $data['total_sent']) * 100, 2);
 
         $data_opens = array();
         $data_country = array(); // Initialize the array
