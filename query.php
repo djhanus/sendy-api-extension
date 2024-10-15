@@ -12,18 +12,17 @@ header('Content-Type: application/json; charset=utf-8');
 <?php 
 
 
-//-------------------------- ERRORS -------------------------//
+    //-------------------------- ERRORS -------------------------//
 	$error_core = array('No data passed', 'API key not passed', 'Invalid API key');
 	$error_passed = array(
-	  'Brand ID not passed'
-	, 'Query not passed'
-    , 'This search yielded no results'
+	  'Brand ID not passed',
+      'Query not passed',
+      'This search yielded no results'
 	);
-	//-----------------------------------------------------------//
+    //-----------------------------------------------------------//
 
-  //  
 	
-	//--------------------------- POST --------------------------//
+    //--------------------------- POST --------------------------//
 	//api_key	
 	if(isset($_POST['api_key']))
 		$api_key = mysqli_real_escape_string($mysqli, $_POST['api_key']);
@@ -76,14 +75,14 @@ header('Content-Type: application/json; charset=utf-8');
 		exit;
 	}
 
-    // Convert date_sent to Unix timestamp if it's in M/d/YY format
+    // Convert date_sent to Unix timestamp if it's in another format
     if ($date_sent) {
         if (is_numeric($date_sent)) {
             // Assume it's a Unix timestamp
             $date_sent_unix = (int)$date_sent;
-        } else {
-            // Assume it's in M/d/YY format
-            $date_sent_unix = strtotime($date_sent);
+        } else { 
+            // Assume it's in another format
+            $date_sent_unix = strtotime($date_sent); //strtotime works for many date formats
             if ($date_sent_unix === false) {
                 echo json_encode(['error' => 'Invalid date format']);
                 exit;
@@ -160,7 +159,6 @@ header('Content-Type: application/json; charset=utf-8');
         if ($link_result !== false) {
             $links = [];
             while ($link_data = mysqli_fetch_assoc($link_result)) {
-                // Rename "clicked" to "clicks"
                 $link_data['clicks'] = $link_data['clicked'];
                 unset($link_data['clicked']);
                 
@@ -169,7 +167,7 @@ header('Content-Type: application/json; charset=utf-8');
         $click_rate = round(($link_data['clicks'] / $data['total_sent']) * 100, 2);
         $links[] = $link_data;
     }
-    $data['total_clicks'] = $total_clicks; // Add total clicks above the links array
+    $data['total_clicks'] = $total_clicks;
     $data['links'] = $links;
         }
 
