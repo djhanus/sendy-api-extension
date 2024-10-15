@@ -17,6 +17,7 @@ Call by POST to api/reporting/query.php with the following mandatory elements
   'api_key' => (your API key)
   'brand_id' => 1
   'search query' => (within the campaign name)
+  'order' => 'asc' or 'desc' (default is 'desc')
   
   (Using the campaign name allows you to programmatically call multiple campaigns without knowing its campaign ID)
 
@@ -60,7 +61,12 @@ label: the labels you queried
 	if(isset($_POST['query']))
 		$query = mysqli_real_escape_string($mysqli, $_POST['query']);
 	else $query = null;
-	
+
+    //order by
+    if(($_POST['order']=='asc') || ($_POST['order']=='desc'))
+    $order = mysqli_real_escape_string($mysqli, $_POST['order']);
+    else $query = desc;
+
 	//-----------------------------------------------------------//
 	
 	//----------------------- VERIFICATION ----------------------//
@@ -98,7 +104,7 @@ label: the labels you queried
 
   // $app = trim(short($brand_id,true));
 
-  $q = 'SELECT to_send, opens, label FROM campaigns WHERE app = '.$brand_id.' AND label LIKE "%'.$query.'%" ORDER BY id DESC;';
+  $q = 'SELECT to_send, opens, label FROM campaigns WHERE app = '.$brand_id.' AND label LIKE "%'.$query.'%" ORDER BY id '.$order.'';';
   $r = mysqli_query($mysqli, $q);
 
   if ($r === false) {
