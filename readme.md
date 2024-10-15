@@ -8,7 +8,7 @@ Using the query tag you can search for campaigns that contain the query in the n
 
 It provides a detailed report consisting of total recepients, clicks, rates, and more. 
 
-See [query.php#26](query.php#26) for detailed information about the fields returned.
+See [query.php#26](query.php#26) for detailed information about the query fields and fields returned.
 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/M4M314FOFQ)
 
