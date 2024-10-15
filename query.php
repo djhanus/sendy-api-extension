@@ -29,7 +29,7 @@ unique_opens: de-duplicated opens figure
 country_opens: an array with individual countries opened out. Note - this is based on total_opens, not unique
 total_sent: the total sent for this campaign
 brand_id: the brand ID you sent
-label: the label you requested
+label: the labels you queried
 
 */
 
@@ -39,7 +39,7 @@ label: the label you requested
 	$error_passed = array(
 	  'Brand ID not passed'
 	, 'Query not passed'
-  , 'This combination of Brand ID and Label does not exist'
+  , 'This search yielded no results'
 	);
 	//-----------------------------------------------------------//
 
@@ -58,8 +58,8 @@ label: the label you requested
 		
 	//query
 	if(isset($_POST['query']))
-		$label = mysqli_real_escape_string($mysqli, $_POST['query']);
-	else $label = null;
+		$qury = mysqli_real_escape_string($mysqli, $_POST['query']);
+	else $query = null;
 	
 	//-----------------------------------------------------------//
 	
@@ -94,11 +94,11 @@ label: the label you requested
 	}
 
   //So, here we are, I think.
-  //We've been passed a brandID and a label.
+  //We've been passed a brandID and a query.
 
   // $app = trim(short($brand_id,true));
 
-  $q = 'SELECT to_send, opens FROM campaigns WHERE app = '.$brand_id.' AND label LIKE "%'.$label.'%";';
+  $q = 'SELECT to_send, opens FROM campaigns WHERE app = '.$brand_id.' AND label LIKE "%'.$query.'%";';
   $r = mysqli_query($mysqli, $q);
 
   if ($r === false) {
