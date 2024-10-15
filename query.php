@@ -104,7 +104,7 @@ label: the labels you queried
 
   // $app = trim(short($brand_id,true));
 
-  $q = 'SELECT to_send, opens, label FROM campaigns WHERE app = '.$brand_id.' AND label LIKE "%'.$query.'%" ORDER BY id '.$order.';';
+  $q = 'SELECT id, to_send, opens, label FROM campaigns WHERE app = '.$brand_id.' AND label LIKE "%'.$query.'%" ORDER BY id '.$order.';';
   $r = mysqli_query($mysqli, $q);
 
   if ($r === false) {
@@ -125,6 +125,7 @@ label: the labels you queried
   {
     $reports = [];
     while ($data = mysqli_fetch_assoc($r)) {
+        $campaign_id = $data['id'];
         $data['label'] = $data['label'];
         $data['total_sent'] = $data['to_send'];
         $data['brand_id'] = $brand_id;
@@ -150,7 +151,18 @@ label: the labels you queried
 
         $data['unique_opens'] = count($data_opens);
         $data['open_percentage'] = round(($data['unique_opens'] / $data['total_sent']) * 100, 2);
-        // $data['country_opens'] = $data_country;
+
+        // Fetch link data for the current campaign
+        $link_query = 'SELECT LEFT(REPLACE(link,query_string,""),CHAR_LENGTH(REPLACE(link,query_string,"")) -1) AS url, recipients, IF(CHAR_LENGTH(opens),1+(CHAR_LENGTH(opens) - CHAR_LENGTH(REPLACE(opens, ",", ""))),0) AS opens, IF(CHAR_LENGTH(clicks),1+(CHAR_LENGTH(clicks) - CHAR_LENGTH(REPLACE(clicks, ",", ""))),0) AS clicked FROM links JOIN campaigns ON campaigns.id=links.campaign_id WHERE app = '.$brand_id.' AND label = "'.$data['label'].'";';
+        $link_result = mysqli_query($mysqli, $link_query);
+
+        if ($link_result !== false) {
+            $links = [];
+            while ($link_data = mysqli_fetch_assoc($link_result)) {
+                $links[] = $link_data;
+            }
+            $data['links'] = $links;
+        }
 
         // Tidy up the data a little
         unset($data['to_send']);
