@@ -20,6 +20,7 @@ Call by POST to api/reporting/query.php with the following mandatory elements
   'brand_id' => (the brand ID you want to search)
   'query' (optional) => Search within the campaign name/label. If not included all campaigns will be returned.
   'order' (optional) => sort by date sent 'asc' or 'desc' (default is 'desc')
+  'sent' (optional) => filter by date sent. Can be a Unix timestamp or a date in M/d/YY format. If not included all campaigns will be returned.
   
   (Using the campaign name allows you to search for multiple campaigns without knowing its campaign ID)
 
@@ -107,6 +108,21 @@ links: an array of links within the campaign, with the following elements:
 		echo $error_passed[0];
 		exit;
 	}
+
+    // Convert date_sent to Unix timestamp if it's in M/d/YY format
+    if ($date_sent) {
+        if (is_numeric($date_sent)) {
+            // Assume it's a Unix timestamp
+            $date_sent_unix = (int)$date_sent;
+        } else {
+            // Assume it's in M/d/YY format
+            $date_sent_unix = strtotime($date_sent);
+            if ($date_sent_unix === false) {
+                echo json_encode(['error' => 'Invalid date format']);
+                exit;
+            }
+        }
+    }
 
   // So, here we are, I think.
   // We've been passed a brandID and a query.
