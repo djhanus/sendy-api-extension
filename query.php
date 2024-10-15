@@ -190,7 +190,7 @@ links: an array of links within the campaign, with the following elements:
     }
 
     // Return the reports as a JSON response
-    echo json_encode(['campaigns' => $campaigns]);
+    echo json_encode(['campaigns' => $campaigns], JSON_NUMERIC_CHECK | JSON_PRETTY_PRINT);
     exit;
   }
 	//-----------------------------------------------------------//
