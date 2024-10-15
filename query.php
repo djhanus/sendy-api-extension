@@ -118,8 +118,11 @@ links: an array of links within the campaign, with the following elements:
   if ($query !== null) {
       $q .= ' AND label LIKE "%'.$query.'%"';
   }
+  if ($date_sent !== null) {
+      $q .= ' AND sent >= '.$date_sent;
+  }
   
-  $q .= ' ORDER BY id '.$order.';';
+  $q .= ' ORDER BY sent '.$order.';';
 
   $r = mysqli_query($mysqli, $q);
 
