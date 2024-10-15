@@ -130,7 +130,7 @@ links: an array of links within the campaign, with the following elements:
       $q .= ' AND label LIKE "%'.$query.'%"';
   }
   if ($date_sent !== null) {
-      $q .= ' AND sent >= '.$date_sent;
+      $q .= ' AND sent >= '.$date_sent_unix;
   }
   
   $q .= ' ORDER BY sent '.$order.';';
