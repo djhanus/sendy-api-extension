@@ -65,7 +65,7 @@ label: the labels you queried
     //order by
     if(($_POST['order']=='asc') || ($_POST['order']=='desc'))
     $order = mysqli_real_escape_string($mysqli, $_POST['order']);
-    else $query = desc;
+    else $query = 'desc';
 
 	//-----------------------------------------------------------//
 	
