@@ -24,7 +24,9 @@ Put this file in a new folder within the /api/ folder, called "reporting", and c
 
   `order` (optional) sort by date sent 'asc' or 'desc' (default is 'desc')
 
-  `sent` (optional) filter by date sent. Can be a Unix timestamp or a date in M/d/YY format. If not included all campaigns will be returned.
+  `sent` (optional) filter by date sent. Can be a Unix timestamp or a date in almost any format. [^1] If not included all campaigns will be returned. 
+
+[^1]: [strtotime](https://www.php.net/manual/en/function.strtotime.php) is used so it will detect most any format and attempt to convert it.
 
 ---
 
