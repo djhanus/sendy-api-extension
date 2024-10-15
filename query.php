@@ -175,6 +175,7 @@ links: an array of links within the campaign, with the following elements:
                 
             // Sum up total clicks
         $total_clicks += $link_data['clicks'];
+        $click_rate = round(($link_data['clicks'] / $data['total_sent']) * 100, 2);
         $links[] = $link_data;
     }
     $data['total_clicks'] = $total_clicks; // Add total clicks above the links array
