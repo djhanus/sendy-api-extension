@@ -7,8 +7,8 @@
  */
 
 // Configuration - UPDATE THESE VALUES
-$sendy_url = 'http://your-sendy-url.com';  // Your Sendy installation URL
-$api_key = 'your-api-key-here';            // Your API key from Sendy settings
+$sendy_url = 'http://staging.sendy.lifescicomms.com/sendy/';  // Your Sendy installation URL
+$api_key = 'Pq32UwhWNvaf71ICrifa';            // Your API key from Sendy settings
 $test_campaign_id = 123;                   // A campaign ID to test with
 $test_brand_id = 1;                        // Your brand ID
 $test_campaign_label = 'Test Campaign';    // Exact campaign label/name
