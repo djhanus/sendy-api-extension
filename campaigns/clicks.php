@@ -22,22 +22,22 @@ $error_passed = array(
 //--------------------------- POST --------------------------//
 //api_key	
 if(isset($_POST['api_key']))
-    $api_key = mysqli_real_escape_string($mysqli, $_POST['api_key']);
+    $api_key = $_POST['api_key'];
 else $api_key = null;
 
 //brand_id
 if(isset($_POST['brand_id']) && is_numeric($_POST['brand_id']))
-    $brand_id = mysqli_real_escape_string($mysqli, $_POST['brand_id']);
+    $brand_id = (int)$_POST['brand_id'];
 else $brand_id = null;
 
 //campaign_id
 if(isset($_POST['campaign_id']) && is_numeric($_POST['campaign_id']))
-    $campaign_id = mysqli_real_escape_string($mysqli, $_POST['campaign_id']);
+    $campaign_id = (int)$_POST['campaign_id'];
 else $campaign_id = null;
 
 //label (for backward compatibility)
 if(isset($_POST['label']))
-    $label = mysqli_real_escape_string($mysqli, $_POST['label']);
+    $label = $_POST['label'];
 else $label = null;
 
 //-----------------------------------------------------------//
@@ -71,18 +71,22 @@ if($campaign_id==null && ($brand_id==null || $label==null))
 
 // Build query based on available parameters
 if($campaign_id != null) {
-    // Use campaign_id directly
-    $q = 'SELECT id, app FROM campaigns WHERE id = '.$campaign_id;
+    // Use campaign_id directly (prepared statement)
+    $stmt = $mysqli->prepare('SELECT id, app FROM campaigns WHERE id = ?');
+    $stmt->bind_param('i', $campaign_id);
+    $stmt->execute();
+    $r = $stmt->get_result();
 } else {
-    // Use brand_id + label (legacy method)
+    // Use brand_id + label (legacy method with prepared statement)
     if($brand_id==null) {
         echo $error_passed[0];
         exit;
     }
-    $q = 'SELECT id, app FROM campaigns WHERE app = '.$brand_id.' AND label = "'.$label.'"';
+    $stmt = $mysqli->prepare('SELECT id, app FROM campaigns WHERE app = ? AND label = ?');
+    $stmt->bind_param('is', $brand_id, $label);
+    $stmt->execute();
+    $r = $stmt->get_result();
 }
-
-$r = mysqli_query($mysqli, $q);
 
 if ($r === false) {
     error_log('MySQL query error: ' . mysqli_error($mysqli));
@@ -101,9 +105,11 @@ $campaign_data = mysqli_fetch_assoc($r);
 $campaign_id = $campaign_data['id'];
 $brand_id = $campaign_data['app'];
 
-// Get detailed click data
-$link_query = 'SELECT LEFT(REPLACE(link,query_string,""),CHAR_LENGTH(REPLACE(link,query_string,"")) -1) AS url, clicks FROM links WHERE campaign_id = "'.$campaign_id.'"';
-$link_result = mysqli_query($mysqli, $link_query);
+// Get detailed click data (prepared statement)
+$link_stmt = $mysqli->prepare('SELECT LEFT(REPLACE(link,query_string,""),CHAR_LENGTH(REPLACE(link,query_string,"")) -1) AS url, clicks FROM links WHERE campaign_id = ?');
+$link_stmt->bind_param('i', $campaign_id);
+$link_stmt->execute();
+$link_result = $link_stmt->get_result();
 
 $output = array();
 

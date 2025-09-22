@@ -24,28 +24,26 @@ date_default_timezone_set('America/New_York');
     //-----------------------------------------------------------//
 
 	
-    //--------------------------- POST --------------------------//
+	//--------------------------- POST --------------------------//
 	//api_key	
 	if(isset($_POST['api_key']))
-		$api_key = mysqli_real_escape_string($mysqli, $_POST['api_key']);
+		$api_key = $_POST['api_key'];
 	else $api_key = null;
 	
 	//brand_id
 	if(isset($_POST['brand_id']) && is_numeric($_POST['brand_id']))
-		$brand_id = mysqli_real_escape_string($mysqli, $_POST['brand_id']);
+		$brand_id = (int)$_POST['brand_id'];
 	else $brand_id = null;
 		
 	//campaign_id (new parameter for direct campaign access)
 	if(isset($_POST['campaign_id']) && is_numeric($_POST['campaign_id']))
-		$campaign_id = mysqli_real_escape_string($mysqli, $_POST['campaign_id']);
+		$campaign_id = (int)$_POST['campaign_id'];
 	else $campaign_id = null;
 
 	//query
 	if(isset($_POST['query']))
-		$query = mysqli_real_escape_string($mysqli, $_POST['query']);
-	else $query = null;
-
-    //date sent
+		$query = $_POST['query'];
+	else $query = null;    //date sent
     if(isset($_POST['date_sent']))
     $date_sent = mysqli_real_escape_string($mysqli, $_POST['date_sent']);
     else $date_sent = null;
@@ -99,36 +97,48 @@ date_default_timezone_set('America/New_York');
 
     // Build query based on available parameters
     if($campaign_id != null) {
-        // Use campaign_id directly
-        $q = 'SELECT id, to_send, opens, label, sent, app FROM campaigns WHERE id = '.$campaign_id;
+        // Use campaign_id directly (prepared statement)
+        $stmt = $mysqli->prepare('SELECT id, to_send, opens, label, sent, app FROM campaigns WHERE id = ?');
+        $stmt->bind_param('i', $campaign_id);
+        $stmt->execute();
+        $temp_result = $stmt->get_result();
         
-        // Get the brand_id for link queries
-        $temp_result = mysqli_query($mysqli, $q);
         if ($temp_result && mysqli_num_rows($temp_result) > 0) {
             $temp_data = mysqli_fetch_assoc($temp_result);
             $brand_id = $temp_data['app'];
+            
+            // Reset result pointer for main processing
+            $stmt->execute();
+            $r = $stmt->get_result();
         } else {
             echo $error_passed[3];
             exit;
         }
-        
-        // Rebuild full query for the main processing
-        $q = 'SELECT id, to_send, opens, label, sent, app FROM campaigns WHERE id = '.$campaign_id;
     } else {
-        // Use brand_id + optional query (legacy method)
-        $q = 'SELECT id, to_send, opens, label, sent FROM campaigns WHERE app = '.$brand_id;
+        // Use brand_id + optional query (legacy method with prepared statement)
+        $query_parts = ['app = ?'];
+        $param_types = 'i';
+        $param_values = [$brand_id];
+        
+        if ($query !== null) {
+            $query_parts[] = 'label LIKE ?';
+            $param_types .= 's';
+            $param_values[] = '%'.$query.'%';
+        }
+        
+        if ($date_sent !== null) {
+            $query_parts[] = 'sent >= ?';
+            $param_types .= 'i';
+            $param_values[] = $date_sent_unix;
+        }
+        
+        $sql = 'SELECT id, to_send, opens, label, sent, app FROM campaigns WHERE ' . implode(' AND ', $query_parts) . ' ORDER BY sent ' . $order;
+        
+        $stmt = $mysqli->prepare($sql);
+        $stmt->bind_param($param_types, ...$param_values);
+        $stmt->execute();
+        $r = $stmt->get_result();
     }
-
-  if ($query !== null && $campaign_id == null) {
-      $q .= ' AND label LIKE "%'.$query.'%"';
-  }
-  if ($date_sent !== null) {
-      $q .= ' AND sent >= '.$date_sent_unix;
-  }
-  
-  $q .= ' ORDER BY sent '.$order.';';
-
-  $r = mysqli_query($mysqli, $q);
 
   if ($r === false) {
       // Log the error message
@@ -180,9 +190,11 @@ date_default_timezone_set('America/New_York');
         // Initialize total clicks counter
         $total_clicks = 0;
         
-        // Fetch link data for the current campaign
-        $link_query = 'SELECT LEFT(REPLACE(link,query_string,""),CHAR_LENGTH(REPLACE(link,query_string,"")) -1) AS url, IF(CHAR_LENGTH(clicks),1+(CHAR_LENGTH(clicks) - CHAR_LENGTH(REPLACE(clicks, ",", ""))),0) AS clicked FROM links JOIN campaigns ON campaigns.id=links.campaign_id WHERE app = '.$brand_id.' AND campaign_id = "'.$data['id'].'";';
-        $link_result = mysqli_query($mysqli, $link_query);
+        // Fetch link data for the current campaign (prepared statement)
+        $link_stmt = $mysqli->prepare('SELECT LEFT(REPLACE(link,query_string,""),CHAR_LENGTH(REPLACE(link,query_string,"")) -1) AS url, IF(CHAR_LENGTH(clicks),1+(CHAR_LENGTH(clicks) - CHAR_LENGTH(REPLACE(clicks, ",", ""))),0) AS clicked FROM links JOIN campaigns ON campaigns.id=links.campaign_id WHERE app = ? AND campaign_id = ?');
+        $link_stmt->bind_param('ii', $brand_id, $data['id']);
+        $link_stmt->execute();
+        $link_result = $link_stmt->get_result();
         
         // clean up link data
         
