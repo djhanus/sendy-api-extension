@@ -1,67 +1,185 @@
-# Sendy API Addons
+# Sendy API Extensions
 
-## Query
+## Overview
 
-[query.php](query.php) is a robust api that allows querying of campaigns based on name/label. 
+This extension provides **campaign reporting APIs** that fill the gap in Sendy's official API, which currently lacks campaign performance endpoints.
 
-Using the query tag you can search for campaigns that contain the query in the name/label.
+### 🎯 Core Campaign APIs (Required)
 
-It provides a detailed report consisting of total recepients, clicks, rates, and more. 
+**Location:** `/api/campaigns/` - These are the essential endpoints that work with [sendy-api-utility](https://github.com/djhanus/sendy-api-utility)
 
-[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/M4M314FOFQ)
+#### `/api/campaigns/summary.php` ⭐
+Returns campaign performance summary in the format expected by testing utilities: `"sent,opens,clicks,unsubscribes"`
 
-### Instructions and Docs
+**Parameters:**
+- `api_key` (required) - Your API key
+- `campaign_id` (optional) - Direct campaign ID access  
+- `brand_id` + `label` (optional) - Legacy label-based access
 
-Put this file in a new folder within the /api/ folder, called "reporting", and call it "query.php".
+**Example Response:**
+```
+1250,45,12,8
+```
 
-> Call by POST to api/reporting/query.php with the following elements
+#### `/api/campaigns/clicks.php` ⭐ 
+Returns detailed click tracking data per link
 
-  `api_key` (your API key)
+**Example Response:**
+```json
+[
+  {
+    "url": "https://example.com/link1", 
+    "clicks": 25
+  },
+  {
+    "url": "https://example.com/link2",
+    "clicks": 10  
+  }
+]
+```
 
-  `brand_id`  (the brand ID you want to search)
+#### `/api/campaigns/opens.php` ⭐
+Returns detailed open tracking data including country breakdown
 
-  `query` (optional)  Search within the campaign name/label. If not included all campaigns will be returned.
-
-  `order` (optional) sort by date sent 'asc' or 'desc' (default is 'desc')
-
-  `sent` (optional) filter by date sent. Can be a Unix timestamp or a date in almost any format. [^1] If not included all campaigns will be returned. 
-
-[^1]: [strtotime](https://www.php.net/manual/en/function.strtotime.php) is used so it will detect most any format and attempt to convert it.
+**Example Response:**
+```json
+{
+  "total_opens": 361,
+  "unique_opens": 208,
+  "country_opens": {
+    "US": 127,
+    "GB": 57,
+    "AU": 48
+  },
+  "total_sent": "341", 
+  "brand_id": "1",
+  "label": "Campaign Name",
+  "campaign_id": "123"
+}
+```
 
 ---
 
-> The data return is in JSON and contains following:
+### 🔍 Advanced Reporting (Optional)
 
-`brand_id` the brand ID you sent
+**Location:** `/api/reporting/` - Power user features for advanced campaign analysis
 
-`id` the campaign ID
+#### `/api/reporting/query.php` 🚀
+**⚠️ OPTIONAL** - This is NOT required for basic campaign API functionality!
 
-`label` the campaign label/name
+Advanced campaign search and bulk reporting with filtering capabilities.
 
-`date_sent` the date the campaign was sent converted from Unix
+**What it provides:**
+- 🔎 **Search campaigns** by name/label pattern matching
+- 📅 **Date filtering** - campaigns sent after/before specific dates  
+- 📊 **Bulk reporting** - multiple campaigns in one API call
+- 🎛️ **Sorting options** - by date sent (asc/desc)
+- 📈 **Rich data** - comprehensive JSON with nested link arrays
 
-`total_sent` the total sent for this campaign
+**Parameters:**
+- `api_key` (required) - Your API key
+- `brand_id` (optional) - Brand ID to search within
+- `campaign_id` (optional) - Direct campaign access  
+- `query` (optional) - Search pattern for campaign names
+- `date_sent` (optional) - Filter by date sent
+- `order` (optional) - Sort by date: 'asc' or 'desc'
 
-`total_opens` the total opens figure, visible in your dashboard
+**Example Advanced Usage:**
+```php
+// Find all newsletters from last month
+'query' => 'newsletter',
+'date_sent' => '2024-01-01'
 
-`open_rate` total opens as a percentage of total sent
+// Get comprehensive data for campaign ID 123  
+'campaign_id' => 123
+```
 
-`unique_opens` de-duplicated opens figure
+---
 
-`open_percentage` the percentage of unique opens against total sent
+## Installation
 
-`total_clicks` the total number of clicks on all links in the campaign
+### Minimal Installation (Recommended)
+Upload **only** the `/campaigns/` folder to your Sendy installation:
 
-`click_rate` the total clicks as a percentage of total sent
+```
+your-sendy-install/api/campaigns/
+├── summary.php     ⭐ Required
+├── clicks.php      ⭐ Required  
+└── opens.php       ⭐ Required
+```
 
-`links` an array of links within the campaign, with the following elements:
+### Full Installation (Optional Power Features)
+Upload **both** folders:
 
-  `url` the URL of the link
+```
+your-sendy-install/api/
+├── campaigns/          ⭐ Required for basic functionality
+│   ├── summary.php
+│   ├── clicks.php      
+│   └── opens.php       
+└── reporting/          🚀 Optional advanced features
+    └── query.php       
+```
 
-  `clicks` the number of clicks on the link
+### Testing with sendy-api-utility
 
-## Links and Reports
-[links.php](links.php) and [reports.php](reports.php) were forked from [jamescridland/links.php](https://gist.github.com/jamescridland/4a5e013c5d5edbcd99ded61412a16568) and [jamescridland/reports.php](https://gist.github.com/jamescridland/1f4ea72fbd262fa31850ccfd5a54df0a) and updated in 2024 for Sendy v6.1.1
+Your [sendy-api-utility](https://github.com/djhanus/sendy-api-utility) works with **just the campaigns folder**! 
 
-They enable you to pull campaign specific data utilizing an API call that specifies a campaign by exact title/label. 
+See [UTILITY_INTEGRATION.md](UTILITY_INTEGRATION.md) for setup instructions.
+
+---
+
+## API Usage Examples
+
+### Simple Campaign Summary (Most Common)
+```php
+POST /api/campaigns/summary.php
+{
+  "api_key": "your-key",
+  "campaign_id": 123
+}
+// Returns: "1250,45,12,8"
+```
+
+### Advanced Campaign Search (Power Users)
+```php  
+POST /api/reporting/query.php
+{
+  "api_key": "your-key",
+  "brand_id": 1,
+  "query": "newsletter", 
+  "date_sent": "2024-01-01"
+}
+// Returns: Comprehensive JSON with multiple campaigns
+```
+
+---
+
+## Compatibility & Requirements
+
+- **Sendy Version:** v6.1.3+ (tested and compatible)
+- **PHP:** Compatible with PHP 8.1+ 
+- **API Structure:** Follows official Sendy API conventions
+- **Backward Compatibility:** Supports both `campaign_id` and legacy `label + brand_id` approaches
+
+### What's New in v2.0
+
+- ✅ Standard `/api/campaigns/` endpoint structure
+- ✅ Dual parameter support (campaign_id OR label+brand_id)
+- ✅ Simple response formats for utility compatibility  
+- ✅ Optional advanced reporting features
+- ✅ Clear separation of core vs optional features
+- ✅ Fixed total_clicks initialization bug
+- ✅ Improved error handling
+
+---
+
+## Quick Start
+
+1. **Download** this repository
+2. **Upload** the `campaigns/` folder to `/api/campaigns/` in your Sendy installation
+3. **Test** using the included `test_endpoints.php` script
+4. **Optional:** Upload `reporting/` folder for advanced features
+
+That's it! Your campaign APIs are now available and compatible with sendy-api-utility. 
 
