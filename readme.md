@@ -121,12 +121,6 @@ your-sendy-install/api/
     └── query.php       
 ```
 
-### Testing with sendy-api-utility
-
-Your [sendy-api-utility](https://github.com/djhanus/sendy-api-utility) works with **just the campaigns folder**! 
-
-See [UTILITY_INTEGRATION.md](UTILITY_INTEGRATION.md) for setup instructions.
-
 ---
 
 ## API Usage Examples
