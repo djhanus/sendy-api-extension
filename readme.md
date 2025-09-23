@@ -4,6 +4,8 @@ This extension provides **campaign reporting APIs** that fill the gap in Sendy's
 
 * [https://sendy.co/api](https://sendy.co/api)
 
+---
+
 ## Campaign Summary (Array)
 
 ### `/api/campaigns/summary.php`
