@@ -3,7 +3,6 @@
 This extension provides **campaign reporting APIs** that fill the gap in Sendy's official API, which currently lacks campaign performance endpoints.
 
 * [https://sendy.co/api](https://sendy.co/api)
-
 ---
 
 ## Campaign Summary (Array)
