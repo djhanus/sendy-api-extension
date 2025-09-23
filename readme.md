@@ -1,14 +1,12 @@
 # Sendy API Extensions
 
-## Overview
-
 This extension provides **campaign reporting APIs** that fill the gap in Sendy's official API, which currently lacks campaign performance endpoints.
 
-### 🎯 Core Campaign APIs (Required)
+* [https://sendy.co/api](https://sendy.co/api)
 
-**Location:** `/api/campaigns/` - These are the essential endpoints that work with [sendy-api-utility](https://github.com/djhanus/sendy-api-utility)
+## Campaign Summary (Array)
 
-#### `/api/campaigns/summary.php` ⭐
+### `/api/campaigns/summary.php`
 Returns campaign performance summary in the format expected by testing utilities: `"sent,opens,clicks,unsubscribes"`
 
 **Parameters:**
@@ -21,24 +19,9 @@ Returns campaign performance summary in the format expected by testing utilities
 1250,45,12,8
 ```
 
-#### `/api/campaigns/clicks.php` ⭐ 
-Returns detailed click tracking data per link
+## Campaign Summary (JSON)
 
-**Example Response:**
-```json
-[
-  {
-    "url": "https://example.com/link1", 
-    "clicks": 25
-  },
-  {
-    "url": "https://example.com/link2",
-    "clicks": 10  
-  }
-]
-```
-
-#### `/api/campaigns/opens.php` ⭐
+### `/api/campaigns/opens.php`
 Returns detailed open tracking data including country breakdown
 
 **Example Response:**
@@ -58,122 +41,117 @@ Returns detailed open tracking data including country breakdown
 }
 ```
 
----
+## Campaign URL Clicks
 
-### 🔍 Advanced Reporting (Optional)
+### `/api/campaigns/clicks.php`
+Returns detailed click tracking data per link
 
-**Location:** `/api/reporting/` - Power user features for advanced campaign analysis
+**Example Response:**
+```json
+[
+  {
+    "url": "https://example.com/link1", 
+    "clicks": 25
+  },
+  {
+    "url": "https://example.com/link2",
+    "clicks": 10  
+  }
+]
+```
 
-#### `/api/reporting/query.php` 🚀
-**⚠️ OPTIONAL** - This is NOT required for basic campaign API functionality!
+
+## Advanced Reporting (Rich Data)
+
+### `/api/reporting/query.php` 🚀
 
 Advanced campaign search and bulk reporting with filtering capabilities.
 
-**What it provides:**
-- 🔎 **Search campaigns** by name/label pattern matching
+<!-- **What it provides:**
+- query specific campaign id
 - 📅 **Date filtering** - campaigns sent after/before specific dates  
 - 📊 **Bulk reporting** - multiple campaigns in one API call
 - 🎛️ **Sorting options** - by date sent (asc/desc)
-- 📈 **Rich data** - comprehensive JSON with nested link arrays
+- 📈 **Rich data** - comprehensive JSON with nested link arrays -->
+
+<!-- {
+  "campaigns": [
+    {
+      "brand_id": "1",
+      "id": "123",
+      "label": "Weekly Newsletter March 2024",
+      "date_sent": "Sunday, March 10, 2024 2:30:45 PM",
+      "total_sent": 1250,
+      "total_opens": 361,
+      "open_rate": 28.88,
+      "unique_opens": 208,
+      "open_percentage": 16.64,
+      "total_clicks": 45,
+      "click_rate": 3.6,
+      "links": [
+        {
+          "url": "https://newsletter.com/article1",
+          "clicks": 25
+        },
+        {
+          "url": "https://newsletter.com/unsubscribe", 
+          "clicks": 12
+        },
+        {
+          "url": "https://newsletter.com/social",
+          "clicks": 8
+        }
+      ]
+    },
+    {
+      "brand_id": "1", 
+      "id": "124",
+      "label": "Product Launch Announcement",
+      "date_sent": "Tuesday, March 12, 2024 10:15:22 AM",
+      "total_sent": 2100,
+      "total_opens": 672,
+      "open_rate": 32.0,
+      "unique_opens": 445,
+      "open_percentage": 21.19,
+      "total_clicks": 89,
+      "click_rate": 4.24,
+      "links": [
+        {
+          "url": "https://shop.com/new-product",
+          "clicks": 67
+        },
+        {
+          "url": "https://shop.com/discount-code",
+          "clicks": 22
+        }
+      ]
+    }
+  ]
+} -->
 
 **Parameters:**
-- `api_key` (required) - Your API key
-- `brand_id` (optional) - Brand ID to search within
-- `campaign_id` (optional) - Direct campaign access  
 - `query` (optional) - Search pattern for campaign names
 - `date_sent` (optional) - Filter by date sent
 - `order` (optional) - Sort by date: 'asc' or 'desc'
+- comprehensive JSON with nested link arrays
 
-**Example Advanced Usage:**
-```php
-// Find all newsletters from last month
-'query' => 'newsletter',
-'date_sent' => '2024-01-01'
-
-// Get comprehensive data for campaign ID 123  
-'campaign_id' => 123
-```
-
----
 
 ## Installation
 
-### Minimal Installation (Recommended)
-Upload **only** the `/campaigns/` folder to your Sendy installation:
+Upload the assets as sub-directories in the main `/api/` folder
 
 ```
-your-sendy-install/api/campaigns/
-├── summary.php     ⭐ Required
-├── clicks.php      ⭐ Required  
-└── opens.php       ⭐ Required
-```
-
-### Full Installation (Optional Power Features)
-Upload **both** folders:
-
-```
-your-sendy-install/api/
-├── campaigns/          ⭐ Required for basic functionality
+application/api/
+├── campaigns/          // Required for basic functionality
 │   ├── summary.php
 │   ├── clicks.php      
 │   └── opens.php       
-└── reporting/          🚀 Optional advanced features
+└── reporting/          // Optional advanced features
     └── query.php       
 ```
 
----
-
-## API Usage Examples
-
-### Simple Campaign Summary (Most Common)
-```php
-POST /api/campaigns/summary.php
-{
-  "api_key": "your-key",
-  "campaign_id": 123
-}
-// Returns: "1250,45,12,8"
-```
-
-### Advanced Campaign Search (Power Users)
-```php  
-POST /api/reporting/query.php
-{
-  "api_key": "your-key",
-  "brand_id": 1,
-  "query": "newsletter", 
-  "date_sent": "2024-01-01"
-}
-// Returns: Comprehensive JSON with multiple campaigns
-```
-
----
-
 ## Compatibility & Requirements
 
-- **Sendy Version:** v6.1.3+ (tested and compatible)
+- **Sendy Version:** v6.1.3+
 - **PHP:** Compatible with PHP 8.1+ 
 - **API Structure:** Follows official Sendy API conventions
-- **Backward Compatibility:** Supports both `campaign_id` and legacy `label + brand_id` approaches
-
-### What's New in v2.0
-
-- ✅ Standard `/api/campaigns/` endpoint structure
-- ✅ Dual parameter support (campaign_id OR label+brand_id)
-- ✅ Simple response formats for utility compatibility  
-- ✅ Optional advanced reporting features
-- ✅ Clear separation of core vs optional features
-- ✅ Fixed total_clicks initialization bug
-- ✅ Improved error handling
-
----
-
-## Quick Start
-
-1. **Download** this repository
-2. **Upload** the `campaigns/` folder to `/api/campaigns/` in your Sendy installation
-3. **Test** using the included `test_endpoints.php` script
-4. **Optional:** Upload `reporting/` folder for advanced features
-
-That's it! Your campaign APIs are now available and compatible with sendy-api-utility. 
-
