@@ -105,8 +105,8 @@ if (!empty($campaign_ids)) {
     $links_stmt = $mysqli->prepare($links_sql);
     
     // Bind parameters dynamically
-    $types = str_repeat('i', count($campaign_ids));
-    $links_stmt->bind_param($types, ...$campaign_ids);
+    $links_types = str_repeat('i', count($campaign_ids));
+    $links_stmt->bind_param($links_types, ...$campaign_ids);
     $links_stmt->execute();
     $links_result = $links_stmt->get_result();
     
