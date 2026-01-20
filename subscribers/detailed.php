@@ -23,7 +23,7 @@ $api_key = isset($_POST['api_key']) ? $_POST['api_key'] : null;
 $brand_id = (isset($_POST['brand_id']) && is_numeric($_POST['brand_id'])) ? (int)$_POST['brand_id'] : null;
 $limit = (isset($_POST['limit']) && is_numeric($_POST['limit'])) ? (int)$_POST['limit'] : 100;
 $offset = (isset($_POST['offset']) && is_numeric($_POST['offset'])) ? (int)$_POST['offset'] : 0;
-$list_id = isset($_POST['list_id']) ? $_POST['list_id'] : null;
+$list_id = (isset($_POST['list_id']) && is_numeric($_POST['list_id'])) ? (int)$_POST['list_id'] : null;
 
 //----------------------- VERIFICATION ----------------------//
 if($api_key==null) {
@@ -53,7 +53,7 @@ $types = 'i';
 if ($list_id) {
     $query .= ' AND l.id = ?';
     $params[] = $list_id;
-    $types .= 's';
+    $types .= 'i';
 }
 $query .= ' ORDER BY s.timestamp DESC LIMIT ? OFFSET ?';
 $params[] = $limit;
@@ -71,7 +71,7 @@ $count_types = 'i';
 if ($list_id) {
     $count_query .= ' AND l.id = ?';
     $count_params[] = $list_id;
-    $count_types .= 's';
+    $count_types .= 'i';
 }
 $count_stmt = $mysqli->prepare($count_query);
 $count_stmt->bind_param($count_types, ...$count_params);
