@@ -96,18 +96,27 @@ while ($camp = $campaigns_result->fetch_assoc()) {
 }
 $campaigns_query->close();
 
-// Pre-fetch all links for these campaigns
+// Pre-fetch all links for these campaigns using prepared statements
 $links_by_campaign = [];
 if (!empty($campaign_ids)) {
-    $in = implode(',', array_map('intval', $campaign_ids));
-    $links_sql = "SELECT campaign_id, clicks FROM links WHERE campaign_id IN ($in)";
-    $links_result = $mysqli->query($links_sql);
+    // Create placeholders for IN clause
+    $placeholders = implode(',', array_fill(0, count($campaign_ids), '?'));
+    $links_sql = "SELECT campaign_id, clicks FROM links WHERE campaign_id IN ($placeholders)";
+    $links_stmt = $mysqli->prepare($links_sql);
+    
+    // Bind parameters dynamically
+    $types = str_repeat('i', count($campaign_ids));
+    $links_stmt->bind_param($types, ...$campaign_ids);
+    $links_stmt->execute();
+    $links_result = $links_stmt->get_result();
+    
     while ($link = $links_result->fetch_assoc()) {
         if (!isset($links_by_campaign[$link['campaign_id']])) {
             $links_by_campaign[$link['campaign_id']] = [];
         }
         $links_by_campaign[$link['campaign_id']][] = $link;
     }
+    $links_stmt->close();
 }
 
 $stmt = $mysqli->prepare($query);
@@ -119,18 +128,21 @@ $subscribers = [];
 while ($row = $result->fetch_assoc()) {
     // Engagement metrics: opens, clicks, campaigns_received, engagement_score
     $subscriber_id = $row['id'];
-    $campaigns_received = count($campaigns);
     $total_opens = 0;
     $total_clicks = 0;
+    $campaigns_engaged = 0; // Count campaigns this subscriber actually engaged with
     $engagement_score = 0;
     
     // Calculate opens and clicks from pre-fetched campaigns and links
     foreach ($campaigns as $camp_id => $camp) {
+        $engaged_with_campaign = false;
+        
         // Opens - use FIND_IN_SET equivalent check with strict comparison
         if (!empty($camp['opens'])) {
             $opens_array = explode(',', $camp['opens']);
             if (in_array((string)$subscriber_id, $opens_array, true)) {
                 $total_opens++;
+                $engaged_with_campaign = true;
             }
         }
         // Clicks
@@ -140,9 +152,15 @@ while ($row = $result->fetch_assoc()) {
                     $clicks_array = explode(',', $link['clicks']);
                     if (in_array((string)$subscriber_id, $clicks_array, true)) {
                         $total_clicks++;
+                        $engaged_with_campaign = true;
                     }
                 }
             }
+        }
+        
+        // Count this campaign if subscriber engaged with it
+        if ($engaged_with_campaign) {
+            $campaigns_engaged++;
         }
     }
     $engagement_score = $total_opens + ($total_clicks * 2);
@@ -168,7 +186,7 @@ while ($row = $result->fetch_assoc()) {
         'list_id' => $row['list_id'],
         'total_opens' => $total_opens,
         'total_clicks' => $total_clicks,
-        'campaigns_received' => $campaigns_received,
+        'campaigns_engaged' => $campaigns_engaged,
         'engagement_score' => $engagement_score,
         'country' => $row['country'],
         'status' => ($row['confirmed'] && !$row['unsubscribed'] && !$row['bounced'] && !$row['complaint']) ? 'active' : 'inactive',
