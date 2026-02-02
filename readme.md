@@ -1,6 +1,6 @@
 # Sendy API Extensions
 
-This extension provides **campaign reporting APIs** that fill the gap in Sendy's official API, which currently lacks campaign performance endpoints.
+This extension provides **campaign reporting and subscriber APIs** that fill the gaps in Sendy's official API.
 
 * [https://sendy.co/api](https://sendy.co/api)
 
@@ -58,6 +58,42 @@ Returns detailed click tracking data per link
     "clicks": 10  
   }
 ]
+```
+
+## Subscriber Data
+
+### `/api/subscribers/detailed.php`
+Returns comprehensive subscriber data with engagement metrics
+
+**Parameters:**
+- `api_key` (required) - Your API key
+- `brand_id` (required) - Brand/App ID
+- `limit` (optional, default: 100) - Number of results
+- `offset` (optional, default: 0) - Pagination offset
+- `list_id` (optional) - Filter by specific list
+
+**Example Response:**
+```json
+{
+  "status": "success",
+  "total_count": 1250,
+  "subscribers": [
+    {
+      "id": 12345,
+      "name": "John Smith",
+      "email": "john.smith@company.com",
+      "signup_date": "2024-03-15",
+      "list_name": "Newsletter",
+      "list_id": "encrypted_list_id",
+      "total_opens": 23,
+      "total_clicks": 8,
+      "campaigns_received": 15,
+      "engagement_score": 39,
+      "country": "US",
+      "status": "active"
+    }
+  ]
+}
 ```
 
 
@@ -142,11 +178,13 @@ Upload the assets as sub-directories in the main `/api/` folder
 
 ```
 application/api/
-├── campaigns/          // Required for basic functionality
+├── campaigns/          // Campaign performance APIs
 │   ├── summary.php
 │   ├── clicks.php      
 │   └── opens.php       
-└── reporting/          // Optional advanced features
+├── subscribers/        // Subscriber data APIs
+│   └── detailed.php    
+└── reporting/          // Advanced search & filtering
     └── query.php       
 ```
 
